@@ -52,6 +52,7 @@ def load_field(field):
         if (b0 == 0xff and b1 == 0xfe) or (b0 == 0xfe and b1 == 0xff):
             return unicode(stringish, encoding='utf16')
         return uni8(stringish)
+    # This is an unrelated change.
     typ = field.get('FT').name
     if typ:
         t = field.get('T')
