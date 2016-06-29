@@ -2,7 +2,7 @@
 # Copyright (c) 2016 Bart Massey
 # This code is available under the "MIT License".
 # Please see the file COPYING in this distribution
-# for license terms.
+# for license terms. This is a change.
 
 # PDF form data extraction library using pdfminer.
 
