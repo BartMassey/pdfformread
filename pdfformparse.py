@@ -23,19 +23,31 @@ def load_form(filename):
         parser = PDFParser(file)
         doc = PDFDocument(parser)
         parser.set_document(doc)
-        fieldlist = [load_fields(resolve1(f)) for f in
+        if not 'AcroForm' in doc.catalog:
+            return None
+        fieldlist = [load_field(resolve1(f)) for f in
                      resolve1(doc.catalog['AcroForm'])['Fields']]
         fieldset = dict()
         for k, v in fieldlist:
             fieldset[k] = v
         return fieldset
 
-def load_fields(field):
-    """load form fields"""
+def load_field(field):
+    """load form field"""
+    def uniflail(stringish):
+        if stringish == None:
+            return None
+        if len(stringish) < 2:
+            return unicode(stringish, encoding='utf8')
+        b0 = ord(stringish[0])
+        b1 = ord(stringish[1])
+        if (b0 == 0xff and b1 == 0xfe) or (b0 == 0xfe and b1 == 0xff):
+            return unicode(stringish, encoding='utf16')
+        return unicode(stringish, encoding='utf8')
     typ = field.get('FT').name
     if typ == "Tx":
         return (field.get('T'), resolve1(field.get('V')))
     elif typ == "Btn":
         return (field.get('T'), resolve1(field.get('V')).name)
     else:
-        raise FieldTypeException(typ)
+        raise FieldTypeException("unknown field type " + typ)
