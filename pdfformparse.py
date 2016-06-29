@@ -38,15 +38,20 @@ def load_form(filename):
 def load_field(field):
     """load form field"""
     def uniflail(stringish):
+        def uni8(stringish):
+            try:
+                return unicode(stringish, encoding='utf8')
+            except UnicodeDecodeError:
+                return unicode(stringish, encoding='iso-8859-1')
         if stringish == None:
             return None
         if len(stringish) < 2:
-            return unicode(stringish, encoding='utf8')
+            return uni8(stringish)
         b0 = ord(stringish[0])
         b1 = ord(stringish[1])
         if (b0 == 0xff and b1 == 0xfe) or (b0 == 0xfe and b1 == 0xff):
             return unicode(stringish, encoding='utf16')
-        return unicode(stringish, encoding='utf8')
+        return uni8(stringish)
     typ = field.get('FT').name
     if typ:
         t = field.get('T')
