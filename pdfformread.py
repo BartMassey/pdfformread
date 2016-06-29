@@ -10,11 +10,11 @@
 #   http://stackoverflow.com/q/3984003/364875
 # but with minor changes for 2016 and for app.
 
-from sys import stdout
 from argparse import ArgumentParser
 import json
 import pickle
 import pprint
+from sys import stdout, stderr
 
 import pdfformparse
 
@@ -29,24 +29,41 @@ def parse_cli():
                       help='Format output for python consumption')
     parser.add_argument('-j', '--json', action='store_true', default=False,
                       help='Format output as JSON')
+    parser.add_argument('-r', '--raw', action='store_true', default=False,
+                      help='Format output un-prettyprinted')
     return parser.parse_args()
 
 def main():
     args = parse_cli()
     form = pdfformparse.load_form(args.file)
+    if not form:
+        stderr.write(args.file + ": no form\n")
+        exit(1)
     if args.out:
         outfile = open(args.out, 'w')
         assert outfile
     else:
         outfile = stdout
     assert not args.json or not args.pickle
-    if args.json:
-        json.dump(form, outfile)
-    elif args.pickle:
-        pickle.dump(form, outfile)
-    else:
-        pp = pprint.PrettyPrinter(indent=2)
-        outfile.write(pp.pformat(form))
+    try:
+        if args.json:
+            if args.raw:
+                indent = None
+            else:
+                indent = 2
+            json.dump(form, outfile, indent=indent)
+        elif args.pickle:
+            pickle.dump(form, outfile)
+        else:
+            if args.raw:
+                form_string = str(form)
+            else:
+                pp = pprint.PrettyPrinter(indent=2)
+                form_string = pp.pformat(form)
+            outfile.write(form_string)
+    except Exception, e:
+        stderr.write(args.file + ": dump failed: " + str(e) + "\n")
+        exit(1)
 
 if __name__ == '__main__':
     main()
