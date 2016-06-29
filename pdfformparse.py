@@ -45,9 +45,13 @@ def load_field(field):
             return unicode(stringish, encoding='utf16')
         return unicode(stringish, encoding='utf8')
     typ = field.get('FT').name
+    if typ:
+        t = field.get('T')
+        if not t:
+            return None
     if typ == "Tx":
-        return (field.get('T'), resolve1(field.get('V')))
+        return (t, uniflail(resolve1(field.get('V'))))
     elif typ == "Btn":
-        return (field.get('T'), resolve1(field.get('V')).name)
+        return (t, uniflail(resolve1(field.get('V')).name))
     else:
         raise FieldTypeException("unknown field type " + typ)
