@@ -10,13 +10,29 @@
 
 from setuptools import setup
 
-setup(name='pdfformparse',
+def readme():
+    with open('README.rst') as f:
+        return f.read()
+
+setup(name='pdfformread',
       version='0.1',
       description='Extract form data from a PDF form.',
+      entry_points={
+          'console_scripts': ['pdfformread=pdfformread.command_line:main'],
+      },
+      long_description=readme(),
+      classifiers=[
+          'Development Status :: 3 - Alpha',
+          'License :: OSI Approved :: MIT License',
+          'Programming Language :: Python :: 2.7',
+          'Topic :: Office/Business',
+      ],
+      keywords='pdf form extract data',
       url='http://github.com/BartMassey/pdfformread',
       author='Bart Massey',
       author_email='bart.massey@gmail.com',
       license='MIT',
-      packages=['pdfformparse'],
+      packages=['pdfformread'],
       install_requires=['pdfminer'],
+      include_package_data=True,
       zip_safe=False)

@@ -16,7 +16,7 @@ import pickle
 import pprint
 from sys import stdout, stderr
 
-import pdfformparse
+import pdfformread
 
 def parse_cli():
     """Load command line arguments"""
@@ -35,7 +35,7 @@ def parse_cli():
 
 def main():
     args = parse_cli()
-    form = pdfformparse.load_form(args.file)
+    form = pdfformread.load_form(args.file)
     if not form:
         stderr.write(args.file + ": no form\n")
         exit(1)
@@ -64,6 +64,3 @@ def main():
     except Exception, e:
         stderr.write(args.file + ": dump failed: " + str(e) + "\n")
         exit(1)
-
-if __name__ == '__main__':
-    main()
