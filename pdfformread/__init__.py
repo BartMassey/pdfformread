@@ -26,10 +26,20 @@ def load_form(filename):
             parser.set_document(doc)
             if not 'AcroForm' in doc.catalog:
                 return None
-            fieldlist = [load_field(resolve1(f)) for f in
-                         resolve1(doc.catalog['AcroForm'])['Fields']]
+            fields = resolve1(doc.catalog['AcroForm'])
+            if fields == None or 'Fields' not in fields:
+                return None
+            fieldlist = []
+            for f in fields['Fields']:
+                field = resolve1(f)
+                if field == None:
+                    return None
+                fieldlist.append(load_field(field))
             fieldset = dict()
-            for k, v in fieldlist:
+            for f in fieldlist:
+                if f == None:
+                    continue
+                k, v = f
                 fieldset[k] = v
             return fieldset
         except UnicodeDecodeError, e:
@@ -58,8 +68,14 @@ def load_field(field):
         if not t:
             return None
     if typ == "Tx":
-        return (t, uniflail(resolve1(field.get('V'))))
+        val = resolve1(field.get('V'))
+        if val == None:
+            return None
+        return (t, uniflail(val))
     elif typ == "Btn":
-        return (t, uniflail(resolve1(field.get('V')).name))
+        val = resolve1(field.get('V'))
+        if val == None:
+            return None
+        return (t, uniflail(val.name))
     else:
         raise FormParseException("unknown field type " + typ)
