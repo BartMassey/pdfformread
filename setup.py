@@ -15,7 +15,7 @@ def readme():
         return f.read()
 
 setup(name='pdfformread',
-      version='0.1.1',
+      version='0.1.2',
       description='Extract form data from a PDF form.',
       entry_points={
           'console_scripts': ['pdfformread=pdfformread.command_line:main'],
